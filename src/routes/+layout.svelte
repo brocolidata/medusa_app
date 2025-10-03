@@ -1,7 +1,7 @@
 <script>	
 	import '../app.css';
 	import { ModeWatcher } from "mode-watcher";
-	import favicon from '$lib/assets/favicon.svg';
+	import logo from '$lib/assets/medusa_icon.svg';
 	import AppHeader from '$lib/components/custom_ui/app_header.svelte';
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
 
@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" href={logo} />
 </svelte:head>
 
 <ModeWatcher />

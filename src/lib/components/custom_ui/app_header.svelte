@@ -3,15 +3,18 @@
     import { goto } from "$app/navigation";
     import { toggleMode } from "mode-watcher";
     import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-    import { 
-        Sheet, 
-        SheetContent, 
-        SheetHeader, 
-        SheetTitle, 
-        SheetTrigger 
+    import {
+        Sheet,
+        SheetContent,
+        SheetHeader,
+        SheetFooter,
+        SheetTitle,
+        SheetTrigger,
     } from "$lib/components/ui/sheet";
-    import { Sun, Moon, Menu } from "@lucide/svelte"; 
+    import { Sun, Moon, Menu } from "@lucide/svelte";
     import NewBookingDialog from "$custom_ui/new_booking_dialog.svelte";
+    import logo from "$lib/assets/medusa_icon.svg";
+    import AppLogo from "./app_logo.svelte";
 
     let sheetIsOpen = $state(false);
 </script>
@@ -23,40 +26,38 @@
         class="container flex h-14 max-w-screen-2xl items-center justify-between"
     >
         <div class="flex items-center space-x-4 px-4">
-
             <Sheet bind:open={sheetIsOpen}>
-                <SheetTrigger class="{buttonVariants({ variant: "icon" })} md:hidden">
-                    <Menu/>
+                <SheetTrigger
+                    class="{buttonVariants({ variant: 'icon' })} md:hidden"
+                >
+                    <Menu />
                 </SheetTrigger>
 
-                <SheetContent side="left"> 
+                <SheetContent side="left">
                     <SheetHeader>
-                        <SheetTitle>
-                            Medusa
-                        </SheetTitle>
+                        <SheetTitle>Medusa</SheetTitle>
                     </SheetHeader>
-                    
+
                     <nav class="flex flex-col items-start gap-4 px-4 py-4">
-                        
-                        <Button variant="ghost" class="text-left" onclick={
-                            () => {
+                        <Button
+                            variant="ghost"
+                            class="text-left"
+                            onclick={() => {
                                 sheetIsOpen = false;
                                 goto(`${base}/caftans`);
-                            }
-                        }>
-                            <span class="text-2xl">
-                                Caftans    
-                            </span>
+                            }}
+                        >
+                            <span class="text-2xl"> Caftans </span>
                         </Button>
-                        <Button variant="ghost" class="text-left" onclick={
-                            () => {
+                        <Button
+                            variant="ghost"
+                            class="text-left"
+                            onclick={() => {
                                 sheetIsOpen = false;
                                 goto(`${base}/bookings`);
-                            }
-                        }>
-                            <span class="text-2xl">
-                                Bookings    
-                            </span>
+                            }}
+                        >
+                            <span class="text-2xl"> Bookings </span>
                         </Button>
                         <!-- <a
                             href="{base}/caftans"
@@ -71,13 +72,28 @@
                             Bookings
                         </a> -->
                     </nav>
+                    <SheetFooter>
+                        <Button
+                            onclick={toggleMode}
+                            variant="outline"
+                            size="icon"
+                        >
+                            <Sun
+                                class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 !transition-all dark:-rotate-90 dark:scale-0"
+                            />
+                            <Moon
+                                class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 !transition-all dark:rotate-0 dark:scale-100"
+                            />
+                            <span class="sr-only">Toggle theme</span>
+                        </Button>
+                    </SheetFooter>
                 </SheetContent>
             </Sheet>
 
             <a href="{base}/" class="flex items-center space-x-2">
-                <span class="font-bold dark:text-white">
-                    Medusa
-                </span>
+                <!-- <img src={logo} alt="logo"/> -->
+                <AppLogo />
+                <span class="font-bold dark:text-white"> Medusa </span>
             </a>
 
             <nav class="hidden md:flex items-center gap-6 text-sm">
@@ -98,15 +114,17 @@
 
         <div class="flex items-center space-x-2 pr-4">
             <NewBookingDialog />
-            <Button onclick={toggleMode} variant="outline" size="icon">
-                <Sun
-                    class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 !transition-all dark:-rotate-90 dark:scale-0"
-                />
-                <Moon
-                    class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 !transition-all dark:rotate-0 dark:scale-100"
-                />
-                <span class="sr-only">Toggle theme</span>
-            </Button>
+            <div class="hidden md:flex">
+                <Button onclick={toggleMode} variant="outline" size="icon">
+                    <Sun
+                        class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 !transition-all dark:-rotate-90 dark:scale-0"
+                    />
+                    <Moon
+                        class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 !transition-all dark:rotate-0 dark:scale-100"
+                    />
+                    <span class="sr-only">Toggle theme</span>
+                </Button>
+            </div>
         </div>
     </div>
 </header>
