@@ -30,7 +30,6 @@ jobs:
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         run: |
-          npm run parse-config
           npm run build
 
       - name: Upload Artifacts
