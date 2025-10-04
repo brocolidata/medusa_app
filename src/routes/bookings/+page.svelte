@@ -1,6 +1,6 @@
 <script>
     import { format } from 'date-fns';
-    import { ordersIndex } from "$lib/stores";
+    import { ordersIndex, sortByKey } from "$lib/stores";
     import DataTable from "$lib/components/custom_ui/data_table.svelte";
     import { renderComponent } from "$lib/components/ui/data-table/index.js";
     import DeleteBookings from './delete_bookings.svelte';
@@ -11,7 +11,7 @@
 	let rowCount = $state();
     let columnVisibility = $state({booking_id:false});
     let rowSelection = $state({});
-    let data = $derived($ordersIndex);
+    let data = $derived(sortData($ordersIndex, sorting));
     let selectedBookingData = $state([]);
     let selectedBookingIDs = $derived(
         selectedBookingData.map((item) => item.booking_id),
@@ -23,7 +23,25 @@
         {label: "pickup_date", type: "date"},
         {label: "dropoff_date", type: "date"}
     ]
+    const typeMap = Object.fromEntries(
+		ordersColumns.map(col => [col.label, col.type])
+	);
     const columns = processTableColumns(ordersColumns);
+    
+    function sortData(dataArray, sortingObject) {
+        if (sortingObject.length > 0) {
+            const key = sortingObject[0]['id'];
+            const order = sortingObject[0]['desc'] === true 
+                ? 'desc' 
+                : 'asc';
+            const columnType = typeMap[key];
+            const dataCopy = [...dataArray];
+            const sortedData = sortByKey(dataCopy, key, columnType, order);
+            return sortedData;
+        } else {
+            return dataArray;
+        }
+    }
 
     /**
      * Creates TanStack table column definitions, applying custom cell rendering for dates.

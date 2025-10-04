@@ -71,6 +71,7 @@
         onSortingChange: (updater) => {
             const newSorting =
                 typeof updater === "function" ? updater(sorting) : updater;
+            console.log('DEBUG newSorting: ', newSorting);
             sorting = newSorting;
             pagination = { ...pagination, pageIndex: 0 };
         },
@@ -97,16 +98,6 @@
         enableSortingRemoval: true,
         enableHiding: true,
     });
-    // $inspect('DEBUG table: ', table);
-    // $effect(() => {
-    //     // Use the table's method to get the selected row data, 
-    //     // which respects sorting/filtering/pagination
-    //     if (table) {
-    //         const rowModel = table.getSelectedRowModel();
-    //         // The rows property contains the actual data objects
-    //         selectedRows = rowModel.flatRows.map(row => row.original);
-    //     }
-    // });
 </script>
 
 <div class="flex flex-col w-full px-4 max-h-[calc(100vh-70px)]">

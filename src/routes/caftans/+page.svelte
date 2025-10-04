@@ -1,5 +1,5 @@
 <script>
-    import { caftansIndex } from "$lib/stores";
+    import { caftansIndex, sortByKey } from "$lib/stores";
     import DataTable from "$lib/components/custom_ui/data_table.svelte";
     import { renderComponent } from "$lib/components/ui/data-table/index.js";
     import DataTableCheckbox from "$custom_ui/data_table_checkbox.svelte";
@@ -12,14 +12,33 @@
     let rowCount = $state();
     let columnVisibility = $state({});
     let rowSelection = $state({});
-    let data = $derived($caftansIndex);
+    let data = $derived(sortData($caftansIndex, sorting));
     let selectedCaftanData = $state([]);
     let selectedCaftanCodes = $derived(
         selectedCaftanData.map((item) => item.caftan_code),
     );
 
-    const caftansColumns = [{ label: "caftan_code" }];
+    const caftansColumns = [{ label: "caftan_code", type: "string"}];
     const columns = processTableColumns(caftansColumns);
+    const typeMap = Object.fromEntries(
+		caftansColumns.map(col => [col.label, col.type])
+	);
+
+    function sortData(dataArray, sortingObject) {
+        console.log('DEBUG sortingObject.length: ', sortingObject.length);
+        if (sortingObject.length > 0) {
+            const key = sortingObject[0]['id'];
+            const order = sortingObject[0]['desc'] === true 
+                ? 'desc' 
+                : 'asc';
+            const columnType = typeMap[key];
+            const dataCopy = [...dataArray];
+            const sortedData = sortByKey(dataCopy, key, columnType, order);
+            return sortedData;
+        } else {
+            return dataArray;
+        }
+    }
 
     function processTableColumns(dataset_columns) {
         const columns_definitions = dataset_columns.map((col) => ({

@@ -5,82 +5,113 @@ export const ordersIndex = localStorageStore('ordersIndex', []);
 export const caftansIndex = localStorageStore('caftansIndex', []);
 
 export function getUniqueProductCodes() {
-    const caftansArray = get(caftansIndex);
-    if (!Array.isArray(caftansArray)) {
-        console.error("Input must be an array.");
-        return [];
-    }
+	const caftansArray = get(caftansIndex);
+	if (!Array.isArray(caftansArray)) {
+		console.error("Input must be an array.");
+		return [];
+	}
 
-    // 1. Use map to pull out all product_code values.
-    const caftanCodes = caftansArray.map(caftan => caftan.caftan_code);
+	// 1. Use map to pull out all product_code values.
+	const caftanCodes = caftansArray.map(caftan => caftan.caftan_code);
 
-    // 2. Use a Set to filter out duplicates, then spread back into an array.
-    const uniqueCodes = [...new Set(caftanCodes)];
+	// 2. Use a Set to filter out duplicates, then spread back into an array.
+	const uniqueCodes = [...new Set(caftanCodes)];
 
-    return uniqueCodes;
+	return uniqueCodes;
 }
 
 export function createCaftan(caftan) {
-  caftansIndex.update((currentCaftans) => {
-    // Check if the dashboard already exists (e.g., by name) to avoid duplicates
-    if (currentCaftans.some(c => c.caftan_code === caftan.caftan_code)) {
-      console.warn(`Caftan with code "${caftan.caftan_code}" already exists.`);
-      return currentCaftans;
-    }
-    // Add the new dashboard to the list
-    return [...currentCaftans, caftan];
-  });
+	caftansIndex.update((currentCaftans) => {
+		// Check if the dashboard already exists (e.g., by name) to avoid duplicates
+		if (currentCaftans.some(c => c.caftan_code === caftan.caftan_code)) {
+			console.warn(`Caftan with code "${caftan.caftan_code}" already exists.`);
+			return currentCaftans;
+		}
+		// Add the new dashboard to the list
+		return [...currentCaftans, caftan];
+	});
 }
 
 export function batchCreateCaftans(newCaftans) {
-  caftansIndex.update(currentData => {
-      // Create a new array that combines the existing data and the new data
-      return [...currentData, ...newCaftans];
-  });
+	caftansIndex.update(currentData => {
+		// Create a new array that combines the existing data and the new data
+		return [...currentData, ...newCaftans];
+	});
 }
 
 export function deleteCaftans(codesToDelete) {
-    caftansIndex.update(currentCaftans => {
-        // Return a new array that includes items whose code is NOT in the list of codesToDelete.
-        const updatedCaftans = currentCaftans.filter(caftan => 
-            !codesToDelete.includes(caftan.caftan_code)
-        );        
-        return updatedCaftans;
-    });
+	caftansIndex.update(currentCaftans => {
+		// Return a new array that includes items whose code is NOT in the list of codesToDelete.
+		const updatedCaftans = currentCaftans.filter(caftan =>
+			!codesToDelete.includes(caftan.caftan_code)
+		);
+		return updatedCaftans;
+	});
 }
 
 export function createBooking(booking) {
-  ordersIndex.update((currentOrders) => {
-    // Check if the dashboard already exists (e.g., by name) to avoid duplicates
-    // if (currentOrders.some(o => o.caftan_code === caftan.caftan_code)) {
-    //   console.warn(`Caftan with code "${caftan.caftan_code}" already exists.`);
-    //   return currentCaftans;
-    // }
-    // Add the new dashboard to the list
-    return [...currentOrders, booking];
-  });
+	ordersIndex.update((currentOrders) => {
+		// Check if the dashboard already exists (e.g., by name) to avoid duplicates
+		// if (currentOrders.some(o => o.caftan_code === caftan.caftan_code)) {
+		//   console.warn(`Caftan with code "${caftan.caftan_code}" already exists.`);
+		//   return currentCaftans;
+		// }
+		// Add the new dashboard to the list
+		return [...currentOrders, booking];
+	});
 }
 
 export function getBookingsForCaftan(caftan_code) {
-  const orders = get(ordersIndex);
-  return orders.filter((order) => order.caftan_code === caftan_code) || [];
+	const orders = get(ordersIndex);
+	return orders.filter((order) => order.caftan_code === caftan_code) || [];
 }
 
 export function deleteBookings(IDsToDelete) {
-    ordersIndex.update(currentOrders => {
-        // Return a new array that includes items whose code is NOT in the list of IDsToDelete.
-        const updatedOrders = currentOrders.filter(booking => 
-            !IDsToDelete.includes(booking.booking_id)
-        );        
-        return updatedOrders;
-    });
+	ordersIndex.update(currentOrders => {
+		// Return a new array that includes items whose code is NOT in the list of IDsToDelete.
+		const updatedOrders = currentOrders.filter(booking =>
+			!IDsToDelete.includes(booking.booking_id)
+		);
+		return updatedOrders;
+	});
 }
 
 export function getCaftanCodeOptions() {
-    const caftansArray = get(caftansIndex);
-    return caftansArray.map((caftan) => ({
-        label: caftan.caftan_code,
-        value: caftan.caftan_code,
-    }));
+	const caftansArray = get(caftansIndex);
+	return caftansArray.map((caftan) => ({
+		label: caftan.caftan_code,
+		value: caftan.caftan_code,
+	}));
 }
 
+/**
+ * Sort an array of objects by a given key, using a known type map
+ */
+export function sortByKey(arr, key, columnType, order = "asc") {
+	
+	return arr.sort((a, b) => {
+		let valA = a[key];
+		let valB = b[key];
+
+		switch (columnType) {
+			case "number":
+				valA = Number(valA);
+				valB = Number(valB);
+				break;
+
+			case "date":
+				valA = new Date(valA).getTime();
+				valB = new Date(valB).getTime();
+				break;
+
+			case "string":
+			default:
+				valA = String(valA).toLowerCase();
+				valB = String(valB).toLowerCase();
+		}
+
+		if (valA < valB) return order === "asc" ? -1 : 1;
+		if (valA > valB) return order === "asc" ? 1 : -1;
+		return 0;
+	});
+}
